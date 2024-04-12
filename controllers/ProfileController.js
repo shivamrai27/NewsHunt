@@ -1,4 +1,4 @@
-
+import { imageValidator } from '../utils/helper.js'
 
 class ProfileController {
 
@@ -23,12 +23,12 @@ class ProfileController {
         const { id } = req.params;
         const authUser = req.user
 
-        if (!req.file || objectEnumNames.keys(req.files).lenght === 0) {
+        if (!req.files || Object.keys(req.files).lenght === 0) {
             return res.status(400).json({ status: 404, message: 'Profile image is required.' });
         }
 
         const profile = req.files.profile;
-        const message = imageValidators(profile?.size, profile.mimetype);
+        const message = imageValidator(profile?.size, profile.mimetype);
         if (message !== null) {
             return res.status(400).json({
                 errors: {

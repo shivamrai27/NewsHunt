@@ -1,6 +1,6 @@
 import { supportedMimes } from "../config/filesystem.js";
 import { v4 as uuidv4 } from "uuid";
-export const imageValidator = (size, mine) => {
+export const imageValidator = (size, mime) => {
     if (bytesToMb(size) > 2) {
         return "image size must be less than 2 MB";
     }
