@@ -77,7 +77,7 @@ class AuthController {
                 const token = jwt.sign(payloadData, process.env.JWT_SECRET, {
                     expiresIn: "365d",
                 })
-                return res.json({ message: "Logged in", access_token: `Bearer: ${token}` });
+                return res.json({ message: "Logged in", access_token: `Bearer ${token}` });
             }
 
             return res.status(400).json({
