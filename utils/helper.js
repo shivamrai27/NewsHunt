@@ -15,6 +15,6 @@ export const bytesToMb = (bytes) => {
     return bytes / (1024 * 1024)
 }
 
-export const generateRandomNumber = () => {
+export const generateRandomNum = () => {
     return uuidv4();
 }
