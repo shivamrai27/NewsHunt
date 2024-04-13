@@ -1,6 +1,7 @@
 import vine, { errors } from '@vinejs/vine';
 import { newsSchema } from '../Validations/NewsValidation.js';
 import { messages } from '@vinejs/vine/defaults';
+import { generateRandomNum, imageValidator } from '../utils/helper.js';
 class NewsController {
     static async index(req, res) { }
 
@@ -8,18 +9,50 @@ class NewsController {
         try {
             const user = req.user;
             const body = req.body;
-            const validator = vine.compile(newsSchema)
-            const payload = await validator.validate(body)
+            const validator = vine.compile(newsSchema);
+            const payload = await validator.validate(body);
+            if (!req.files || Object.keys(req.files).length == 0) {
+                return res.status(400).json({
+                    errors: {
+                        image: "Image field is requird."
+                    }
+                });
+            }
+            // * Image custom validator
+            const image = req.files?.image
+            const message = imageValidator(image?.size, image?.mimetype)
+            if (messages !== null) {
+                return res.status(400).json({
+                    errors: {
+                        image: message
+                    }
+                });
+            }
+            // * Image upload
+            const imgExt = image?.name.split(".")
+            const imageName = generateRandomNum() + "." + imgExt[1];
+            // * where(path) you want to save the image after renaming it
+            const uploadPath = process.cwd() + "/public/images/" + imageName
+            // * moving the profile pic to uploadPath
+            image.mv(uploadPath, (err) => {
+                if (err) throw err
+            });
+            payload.image = imageName
+            payload.user_id = user_id
+            const news = await prisma.news.create({
+                data: payload
+            })
+            return res.json({ status: 200, message: "News created sucessfully", news });
         } catch (error) {
 
             if (error instanceof errors.E_VALIDATION_ERROR) {
-                console.log(error.message);
+                // console.log(error.message);
                 return res.status(400).json({ errors: error.messages });
             } else {
                 return res.status(500).json({
                     status: 500,
-                    message: "something went wrong"
-                })
+                    messages: "something went wrong"
+                });
             }
         }
 
