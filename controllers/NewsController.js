@@ -3,8 +3,48 @@ import prisma from "../DB/db.config.js"
 import { newsSchema } from '../Validations/NewsValidation.js';
 import { messages } from '@vinejs/vine/defaults';
 import { generateRandomNum, imageValidator } from '../utils/helper.js';
+import newsApiTransform from '../transform/newsApiTransform.js';
 class NewsController {
-    static async index(req, res) { }
+    static async index(req, res) {
+        //* Pagination
+        const page = Number(req.query.page) || 1
+        const limit = Number(req.query.limit) || 3
+
+        if (page <= 0) {
+            page = 0;
+        }
+        if (limit <= 0 || limit > 10) {
+            limit = 10;
+        }
+        const skip = (page - 1) * limit
+        const news = await prisma.news.findMany({
+            take: limit,
+            skip: skip,
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        profile: true,
+                    },
+                },
+
+            },
+        });
+        const newsTransform = news?.map((item) => newsApiTransform.transform(item))
+
+        const totalNews = await prisma.news.count();
+        const totalPages = Math.ceil(totalNews / limit)
+        return res.json({
+            status: 200,
+            news: newsTransform,
+            metadata: {
+                totalPages,
+                currentPage: page,
+                currentLimit: limit,
+            }
+        })
+    }
 
     static async store(req, res) {
         try {
@@ -63,7 +103,23 @@ class NewsController {
 
     }
 
-    static async show(req, res) { }
+    static async show(req, res) {
+        const { id } = req.params;
+        const news = await prisma.news.findUnique({
+            where: {
+                id: Number(id)
+            },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        profile: true
+                    }
+                }
+            }
+        })
+    }
 
     static async update(req, res) { }
 
