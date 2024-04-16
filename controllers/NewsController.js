@@ -104,21 +104,29 @@ class NewsController {
     }
 
     static async show(req, res) {
-        const { id } = req.params;
-        const news = await prisma.news.findUnique({
-            where: {
-                id: Number(id)
-            },
-            include: {
-                user: {
-                    select: {
-                        id: true,
-                        name: true,
-                        profile: true
+        try {
+            const { id } = req.params;
+            const news = await prisma.news.findUnique({
+                where: {
+                    id: Number(id)
+                },
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            name: true,
+                            profile: true
+                        }
                     }
                 }
-            }
-        })
+            });
+
+            const transformNews = news ? newsApiTransform.transform(news) : null
+            return res.json({ status: 200, news: transformNews })
+        } catch (error) {
+            res.json({ staus: 500, message: "something went wrong" })
+        }
+
     }
 
     static async update(req, res) { }
