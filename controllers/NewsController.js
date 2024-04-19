@@ -4,6 +4,7 @@ import { newsSchema } from '../Validations/NewsValidation.js';
 import { messages } from '@vinejs/vine/defaults';
 import { generateRandomNum, imageValidator, removeImage, uploadImage } from '../utils/helper.js';
 import newsApiTransform from '../transform/newsApiTransform.js';
+
 class NewsController {
     static async index(req, res) {
         //* Pagination
@@ -172,7 +173,38 @@ class NewsController {
         return res.status(200).json({ message: "news updated successfully" });
     }
 
-    static async destroy(req, res) { }
+    static async destroy(req, res) {
+        try {
+            const { id } = req.params
+            const user = req.user
+            const news = await prisma.news.findUnique({
+                where: {
+                    id: Number(id),
+                }
+            })
+            if (user.id != news?.user_id) {
+                return res.status(401).json({ message: "UnAuthorized" },)
+            }
+            // * delete image from filesystem
+            removeImage(news.image);
+            await prisma.news.delete({
+                where: {
+                    id: Number(id)
+                },
+            });
+            return res.json({ message: "news deleted successfully" })
+        } catch (error) {
+            if (error instanceof errors.E_VALIDATION_ERROR) {
+                console.log(error.messages);
+                return res.status(400).json({ errors: error.messages });
+            } else {
+                return res.status(500).json({
+                    status: 500,
+                    messages: "something went wrong"
+                });
+            }
+        }
+    }
 }
 
 export default NewsController;
