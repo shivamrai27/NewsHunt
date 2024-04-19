@@ -2,7 +2,7 @@ import vine, { errors } from '@vinejs/vine';
 import prisma from "../DB/db.config.js"
 import { newsSchema } from '../Validations/NewsValidation.js';
 import { messages } from '@vinejs/vine/defaults';
-import { generateRandomNum, imageValidator } from '../utils/helper.js';
+import { generateRandomNum, imageValidator, removeImage, uploadImage } from '../utils/helper.js';
 import newsApiTransform from '../transform/newsApiTransform.js';
 class NewsController {
     static async index(req, res) {
@@ -69,17 +69,8 @@ class NewsController {
                 });
             }
 
-            // * Image upload
-            const imgExt = image?.name.split(".");
-            const imageName = generateRandomNum() + "." + imgExt[1];
-
-            // * where(path) you want to save the image after renaming it
-            const uploadPath = process.cwd() + "/public/images/" + imageName;
-
-            // * moving the profile pic to uploadPath
-            image.mv(uploadPath, (err) => {
-                if (err) throw err;
-            });
+            // * Image upload 
+            const imageName = uploadImage(image);
             payload.image = imageName;
             payload.user_id = user.id;
 
@@ -89,7 +80,6 @@ class NewsController {
             return res.json({ status: 200, message: "News created sucessfully", news });
         }
         catch (error) {
-
             if (error instanceof errors.E_VALIDATION_ERROR) {
                 console.log(error.messages);
                 return res.status(400).json({ errors: error.messages });
@@ -129,7 +119,58 @@ class NewsController {
 
     }
 
-    static async update(req, res) { }
+    static async update(req, res) {
+        try {
+            const { id } = req.params;
+            const user = req.user;
+            const body = req.body;
+            const news = await prisma.news.findUnique({
+                where: {
+                    id: Number(id)
+                },
+            })
+            if (user.id != news.user_id) {
+                return res.status(400).json({ message: "UnAuthorized " })
+            }
+            const validator = vine.compile(newsSchema)
+            const payload = await validator.validate(body)
+            const image = req?.file?.image;
+
+            if (image) {
+                const message = imageValidator(image?.size, image?.mimetype)
+                if (message != null) {
+                    return res.status(400).json({
+                        errors: {
+                            image: message,
+                        }
+                    })
+                }
+                // * Upload new image
+                const imageName = uploadImage(image);
+                payload.image = imageName
+                //* Delete old image
+                removeImage(news.image)
+            }
+            await prisma.news.update({
+
+                data: payload,
+                where: {
+                    id: Number(id),
+                },
+            });
+        } catch (error) {
+            if (error instanceof errors.E_VALIDATION_ERROR) {
+                console.log(error.messages);
+                return res.status(400).json({ errors: error.messages });
+            } else {
+                return res.status(500).json({
+                    status: 500,
+                    messages: "something went wrong"
+                });
+            }
+        }
+        return res.status(200).json({ message: "news updated successfully" });
+    }
 
     static async destroy(req, res) { }
 }
