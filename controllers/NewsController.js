@@ -77,7 +77,13 @@ class NewsController {
 
             const news = await prisma.news.create({
                 data: payload
-            })
+            });
+
+            // * remove cache
+            redisCache.del("/api/news", (err) => {
+                if (err) throw err;
+            });
+
             return res.json({ status: 200, message: "News created sucessfully", news });
         }
         catch (error) {
