@@ -4,6 +4,7 @@ import { newsSchema } from '../Validations/NewsValidation.js';
 import { messages } from '@vinejs/vine/defaults';
 import { generateRandomNum, imageValidator, removeImage, uploadImage } from '../utils/helper.js';
 import newsApiTransform from '../transform/newsApiTransform.js';
+import logger from '../config/logger.js';
 
 class NewsController {
     static async index(req, res) {
@@ -87,6 +88,7 @@ class NewsController {
             return res.json({ status: 200, message: "News created sucessfully", news });
         }
         catch (error) {
+            logger.error(error?.message);
             if (error instanceof errors.E_VALIDATION_ERROR) {
                 console.log(error.messages);
                 return res.status(400).json({ errors: error.messages });

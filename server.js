@@ -23,6 +23,7 @@ app.get("/", (req, res) => {
 // * Import routes
 import ApiRoutes from "./routes/api.js";
 import rateLimit from "express-rate-limit";
+
 app.use("/api", ApiRoutes);
 
 app.listen(PORT, () => console.log(`server is runing on ${PORT}`))
