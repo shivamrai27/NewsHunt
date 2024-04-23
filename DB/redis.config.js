@@ -7,4 +7,4 @@ const redisCache = redis({
     expire: 60 * 60,
 });
 
-export default redisCache;
+export default redisCache; 

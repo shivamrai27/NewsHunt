@@ -8,7 +8,7 @@ import redisCache from "../DB/redis.config.js";
 const router = Router()
 router.post("/auth/register", AuthController.register);
 router.post("/auth/login", AuthController.login);
-
+router.get("/send-email", AuthController.sendTestEmail);
 // * Profile routes
 router.get("/profile", authMiddleware, ProfileController.index); //Private route
 router.put("/profile/:id", authMiddleware, ProfileController.update); //Private route

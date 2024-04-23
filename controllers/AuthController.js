@@ -3,6 +3,7 @@ import vine, { errors } from "@vinejs/vine";
 import { loginSchema, registerSchema } from "../Validations/authValidation.js";
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken";
+import { sendEmail } from "../config/mailer.js";
 class AuthController {
     static async register(req, res) {
         try {
@@ -99,6 +100,23 @@ class AuthController {
                         message: "something went wrong"
                     })
             }
+        }
+    }
+
+    // * Send test email
+    static async sendTestEmail(req, res, next) {
+        try {
+            const { email } = req.query
+            const payload = {
+                toEmail: email,
+                subject: "Hey I am just testing",
+                body: "<h1>Hello World, This side nodemailer and brevo</h1>",
+            };
+            await sendEmail(payload.toEmail, payload.subject, payload.body);
+            res.json({ status: 200, message: "Email sent" })
+        } catch (error) {
+            loggers.error({ type: "Email Error", body: error })
+            return res.status(500).json({ message: "SOmething went wrong" })
         }
     }
 }
