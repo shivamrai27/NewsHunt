@@ -4,6 +4,7 @@ import { loginSchema, registerSchema } from "../Validations/authValidation.js";
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken";
 import { sendEmail } from "../config/mailer.js";
+import { emailQueue, emailQueueName } from "../jobs/SendEmailJob.js";
 class AuthController {
     static async register(req, res) {
         try {
@@ -107,13 +108,26 @@ class AuthController {
     static async sendTestEmail(req, res, next) {
         try {
             const { email } = req.query
-            const payload = {
-                toEmail: email,
-                subject: "Hey I am just testing",
-                body: "<h1>Hello World, This side nodemailer and brevo</h1>",
-            };
-            await sendEmail(payload.toEmail, payload.subject, payload.body);
-            res.json({ status: 200, message: "Email sent" })
+            const payload = [
+                {
+                    toEmail: email,
+                    subject: "Hey I am just testing hulululu",
+                    body: "<h1>Hello World, This side nodemailer and brevo</h1>",
+                },
+                {
+                    toEmail: email,
+                    subject: "Hey I am just testing huhuhuh",
+                    body: "<h1>Hello World, This side nodemailer and brevo</h1>",
+                },
+                {
+                    toEmail: email,
+                    subject: "Hey I am just testing hahaha",
+                    body: "<h1>Hello World, This side nodemailer and brevo</h1>",
+                }
+            ];
+            await emailQueue.add(emailQueueName, payload)
+            // await sendEmail(payload.toEmail, payload.subject, payload.body);
+            return res.json({ status: 200, message: "Job added successfully" })
         } catch (error) {
             loggers.error({ type: "Email Error", body: error })
             return res.status(500).json({ message: "SOmething went wrong" })
