@@ -1,3 +1,92 @@
 2024-04-20T21:37:05.793Z [right meow! info: Hey I am just testing...]
 2024-04-20T21:38:54.731Z [right meow! error: Hey I am just testing...]
 2024-04-20T21:41:40.094Z [right meow! error: Hey I am just testing...]
+2024-05-17T19:17:16.496Z [right meow! error: 
+Invalid `prisma.news.create()` invocation:
+
+{
+  data: {
+    image: "f65cb2dc-4144-4afb-bec6-17c810b0a757.png",
+    user_id: 1,
++   title: String
+  }
+}
+
+Argument `title` is missing.]
+2024-05-17T19:20:16.365Z [right meow! error: 
+Invalid `prisma.news.create()` invocation:
+
+{
+  data: {
+    image: "f4a40937-b208-47ab-9135-ede8c99bbcbe.png",
+    user_id: 5,
++   title: String
+  }
+}
+
+Argument `title` is missing.]
+2024-05-17T19:22:32.979Z [right meow! error: 
+Invalid `prisma.news.create()` invocation:
+
+{
+  data: {
+    image: "fda59f88-ddc4-4630-988d-05cdac31e0f3.png",
+    user_id: 5,
++   title: String
+  }
+}
+
+Argument `title` is missing.]
+2024-05-17T19:24:13.695Z [right meow! error: 
+Invalid `prisma.news.create()` invocation:
+
+{
+  data: {
+    image: "701cbb0a-9c4c-4b6a-93b9-3cf152ca3caf.jpg",
+    user_id: 5,
++   title: String
+  }
+}
+
+Argument `title` is missing.]
+2024-05-17T19:24:57.596Z [right meow! error: 
+Invalid `prisma.news.create()` invocation:
+
+{
+  data: {
+    image: "0ec6821c-1ba1-4e57-8d29-7179edc4e8ac.jpg",
+    user_id: 5,
++   title: String
+  }
+}
+
+Argument `title` is missing.]
+2024-05-17T19:34:01.316Z [right meow! error: 
+Invalid `prisma.news.create()` invocation:
+
+{
+  data: {
+    image: "f1e28065-ec5c-4157-8b3f-9d2a652a41fb.jpg",
+    user_id: 5,
++   title: String
+  }
+}
+
+Argument `title` is missing.]
+2024-05-17T19:35:37.444Z [right meow! error: 
+Invalid `prisma.news.create()` invocation:
+
+{
+  data: {
+    image: "a745ae35-84d3-4681-ae38-e8d33b5278f7.jpg",
+    user_id: 5,
++   title: String
+  }
+}
+
+Argument `title` is missing.]
+2024-05-20T19:50:06.211Z [right meow! error: 
+Invalid `prisma.news.create()` invocation:
+
+
+Foreign key constraint failed on the field: `News_user_id_fkey (index)`]
